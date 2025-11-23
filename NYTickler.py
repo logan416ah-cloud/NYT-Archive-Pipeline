@@ -199,7 +199,8 @@ class Tickler:
         self._combined = None
         self._snapshot = {}
 
-        data_folder = Path("NYT_Data")
+        base_path = Path(__file__).parent
+        data_folder = base_path / "NYT_Data"
         if not data_folder.exists():
             print(
                 "NYT_Data folder missing\n"
@@ -221,10 +222,13 @@ class Tickler:
             pd.DataFrame: Combined DataFrame of all CSV articles.
         """
 
+        base_path = Path(__file__).parent
+        data_path = base_path / "NYT_Data"
+
         if year1 is not None and year2 is not None:
-            search_path = Path(f"NYT_Data/{year1}-{year2}")
+            search_path = data_path / f"{year1}-{year2}"
         else:
-            search_path = Path("NYT_Data")
+            search_path = data_path
 
         files = list(search_path.rglob("nyt_*.csv"))
         current_snapshot = {f: f.stat().st_mtime for f in files}
