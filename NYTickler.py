@@ -277,7 +277,7 @@ class Tickler:
             # IMPORTANT! Some NYT archive months have no data.
             # Skips over files with no data. 
             except pd.errors.EmptyDataError: 
-                print(f"Empty CSV skipped: {f}")
+                print(f"\nEmpty CSV skipped: {f}")
                 continue
 
             if df.empty:
@@ -358,7 +358,7 @@ class Tickler:
 
         return result
     
-    def filter_by_headline(self, *keywords, save=False):
+    def filter_by_headline(self, *keywords, save=False, exact=False):
         """
         Filters the combined dataframe by headline keywords (case-insensitive)
 
@@ -375,7 +375,40 @@ class Tickler:
         
         raw_keywords = keywords
 
-        filter_keywords = "|".join(keywords)
+        if exact:
+            # Allows for exact keyword matches
+            #
+            # "|".join(keywords) joins your keywords with | (OR operator)
+            # Example:
+            #   keywords = ("Trump", "Biden")
+            #   becomes: "Trump|Biden"
+            #
+            # \b ... \b are word boundaries. 
+            # Meaning:
+            #   \bwar\b matches "war" as a full word
+            #   but does NOT match: "*WARm" or "forWARd"
+            # Example
+            # \bwar\b will match with headlines only containing EXACT matches
+            # "War in the Middle East" OR
+            # "Cold War news"
+            # 
+            # (?:...) is a non capturing group. It groups the OR keywords without
+            # creating a capture group
+            # Example:
+            #   (Trump|Biden) -> capturing group
+            #   (?:Trump|Biden) -> non-capturing group
+            #
+            # %s is substitution 
+            # %s % "Trump|Biden" just becomes "Trump|Biden"
+            #
+            # So filter_by_headline("Trump", "Biden", exact=True)
+            # Creates:
+            # r"\b(?:Trump|Biden)\b"
+            
+            filter_keywords = r"\b(?:%s)\b" % "|".join(keywords)
+        else:
+            filter_keywords = "|".join(keywords)
+
         result = df[df['headline'].str.contains(filter_keywords, case=False, na=False)]
 
         if save:
@@ -415,7 +448,7 @@ class Tickler:
             print(" -", s)
 
 if __name__=='__main__':
-    api_key = 'Your NYT API Key' # Must add ***YOUR*** API key or program won't work
+    api_key = 'Your API Key' # Must add ***YOUR*** API key or program won't work
 
     year1 = input("Enter start year: ")
     year2 = input("Enter end year: ")
