@@ -138,7 +138,9 @@ EXAMPLE OUTPUT:
 
 ### Analyze articles:
 
-Must contain CSV files in order to filter.
+You must download files in order to use Tickler(). 
+
+Once you do, you are able to filter your available datasets.
 
 ```python
 from NYTickler import Tickler
