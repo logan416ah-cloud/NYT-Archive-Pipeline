@@ -93,8 +93,11 @@ class NYTArchiveClient():
         main_directory = base_path / "NYT_Data"
         main_directory.mkdir(exist_ok=True)
 
+        query_folder = base_path / "Custom_Search_Folder"
+        query_folder.mkdir(exist_ok=True)
+
         decades = [
-            (1851, 1859), (1860, 1869), (1870, 1879), (1880, 1889),
+            (1850, 1859), (1860, 1869), (1870, 1879), (1880, 1889),
             (1890, 1899), (1900, 1909), (1910, 1919), (1920, 1929),
             (1930, 1939), (1940, 1949), (1950, 1959), (1960, 1969),
             (1970, 1979), (1980, 1989), (1990, 1999), (2000, 2009),
@@ -267,7 +270,7 @@ class Tickler:
             return self._combined
 
         mainframe= []
-        for f in files:
+        for f in tqdm(files, desc="Loading NYT Archive CSVs", unit="file"):
             try:
                 df = pd.read_csv(f)
 
@@ -289,7 +292,7 @@ class Tickler:
 
         return self._combined
     
-    def filter_by_date(self, year: int, month: int, day: int) -> pd.DataFrame:
+    def filter_by_date(self, year: int, month: int, day: int, save=False) -> pd.DataFrame:
         """
         Filters the combined dataframe by a specific date.
 
@@ -312,9 +315,19 @@ class Tickler:
         
         result = df[df['publish_date'].dt.date == target_date.date()]
 
+        if save:
+            base_path = Path(__file__).parent
+            save_path = base_path / "Custom_Search_Folder"
+            save_path.mkdir(exist_ok=True)
+
+            file_path = save_path / f"filtered_{target_date.date()}.csv"
+            result.to_csv(file_path, index=False)
+
+            print(f"Saved search results to {file_path}")
+
         return result
 
-    def filter_by_section(self, section):
+    def filter_by_section(self, section, save=False):
         """
         Filters the combined dataframe by section name (case-insensitive)
 
@@ -330,9 +343,22 @@ class Tickler:
             return pd.DataFrame()
         
         result = df[df['section_name'].str.contains(section, case=False, na=False)]
+
+        if save:
+            base_path = Path(__file__).parent
+            save_path = base_path / "Custom_Search_Folder"
+            save_path.mkdir(exist_ok=True)
+
+            safe_section = section.lower().replace(" ","_").replace("/", "-")
+
+            file_path = save_path / f"filtered_section_{safe_section}.csv"
+            result.to_csv(file_path, index=False)
+        
+            print(f"Saved search results to {file_path}")
+
         return result
     
-    def filter_by_headline(self, *keywords):
+    def filter_by_headline(self, *keywords, save=False):
         """
         Filters the combined dataframe by headline keywords (case-insensitive)
 
@@ -347,8 +373,23 @@ class Tickler:
         if df.empty or not keywords:
             return pd.DataFrame()
         
-        keywords = "|".join(keywords)
-        result = df[df['headline'].str.contains(keywords, case=False, na=False)]
+        raw_keywords = keywords
+
+        filter_keywords = "|".join(keywords)
+        result = df[df['headline'].str.contains(filter_keywords, case=False, na=False)]
+
+        if save:
+            base_path = Path(__file__).parent
+            save_path = base_path / "Custom_Search_Folder"
+            save_path.mkdir(exist_ok=True)
+
+            safe_keywords = "_".join(raw_keywords).lower().replace(" ", "_").replace("/", "-")
+
+            file_path = save_path / f"filtered_headline_{safe_keywords}.csv"
+            result.to_csv(file_path, index=False)
+        
+            print(f"Saved search results to {file_path}")
+
         return result
     
     def show_available(self):
