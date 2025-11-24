@@ -84,7 +84,31 @@ class NYTArchiveClient():
         self.months = range(1, 13)
         self.api_key = api_key
         self.params = {"api-key": api_key}
+
+        self.create_all_files()
     
+    def create_all_files(self):
+        base_path = Path(__file__).parent
+
+        main_directory = base_path / "NYT_Data"
+        main_directory.mkdir(exist_ok=True)
+
+        decades = [
+            (1851, 1859), (1860, 1869), (1870, 1879), (1880, 1889),
+            (1890, 1899), (1900, 1909), (1910, 1919), (1920, 1929),
+            (1930, 1939), (1940, 1949), (1950, 1959), (1960, 1969),
+            (1970, 1979), (1980, 1989), (1990, 1999), (2000, 2009),
+            (2010, 2019), (2020, 2029)
+        ]
+
+        for start, end in decades:
+            decade_path = main_directory / f"{start}-{end}"
+            decade_path.mkdir(exist_ok=True)
+
+            for year in range(start, end + 1):
+                year_folder = decade_path / f"{year}_archive"
+                year_folder.mkdir(exist_ok=True)
+
     @staticmethod
     def validate_key(api_key): 
         """
@@ -130,9 +154,8 @@ class NYTArchiveClient():
         Downloads NYT articles for the specified year/month range
         and saves each month as a CSV file in 'NYT_Data' folder.
         """
-
-        folder = Path("NYT_Data")
-        folder.mkdir(exist_ok=True)
+        base_path = Path(__file__).parent
+        folder = base_path / "NYT_Data"
 
         # Loop through the years and months, download data
         for year in tqdm(self.years, desc='Years'):
@@ -176,7 +199,14 @@ class NYTArchiveClient():
                     )
 
                 # Save CSV for each month
-                file_path = folder / f"nyt_{year}_{month}.csv"
+                decade_start = (year // 10) * 10
+                decade_end = decade_start + 9 
+
+                decade_folder = folder / f"{decade_start}-{decade_end}"
+
+                year_folder = decade_folder / f"{year}_archive"
+                file_path = year_folder / f"nyt_{year}_{month}.csv"
+
                 article_df.to_csv(file_path, index=False)
 
                 time.sleep(12) # IMPORTANT - NYT API allows for 5 requests a minute.
@@ -344,7 +374,7 @@ class Tickler:
             print(" -", s)
 
 if __name__=='__main__':
-    api_key = 'Your NYT API Key'
+    api_key = 'Your NYT API Key' # Must add ***YOUR*** API key or program won't work
 
     year1 = input("Enter start year: ")
     year2 = input("Enter end year: ")
