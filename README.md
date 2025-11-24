@@ -119,6 +119,22 @@ api_key = "YOUR_NYT_API_KEY"
 client = NYTArchiveClient(api_key, 1990, 1995)
 client.start_download()
 ```
+OR if using the NYTickler.py file directly
+
+```python
+if __name__=='__main__':
+    api_key = 'Your API Key' # Must add ***YOUR*** API key or program won't work
+
+    year1 = input("Enter start year: ")
+    year2 = input("Enter end year: ")
+
+    client = NYTArchiveClient(api_key, year1, year2)
+    client.start_download()
+```
+
+EXAMPLE OUTPUT:
+
+<img width="1205" height="77" alt="Example2" src="https://github.com/user-attachments/assets/80c9179f-e142-444f-9873-6c1364b4a28f" />
 
 ### Analyze articles:
 
@@ -131,6 +147,18 @@ t = Tickler()
 df = t.filter_by_headline("election", "war")
 print(df)
 ```
+
+```python
+from NYTickler import Tickler
+
+t = Tickler()
+print(t.filter_by_date(2001, 9, 11))
+```
+
+EXAMPLE OUTPUT
+
+<img width="1197" height="323" alt="Example1" src="https://github.com/user-attachments/assets/4effe9c1-fb12-4863-a877-aca0494b6e71" />
+
 ### Saving searches:
 
 You can also save custom search queries by adding save=True.
