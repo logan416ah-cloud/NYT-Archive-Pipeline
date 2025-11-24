@@ -4,6 +4,13 @@ A Python-based toolset for downloading, caching, and analyzing historical New Yo
 This project was built to practice and demonstrate working with REST APIs, handling rate limits, data engineering (ETL), file system
 automation, and large-scale data analysis with Pandas.
 
+This project began as a way to deepen my Python skills, specifically around working with REST APIs, data processing, and automation. I 
+originally set out to learn how to pull and analyze API data for a final project in a Rutgers University course, but quickly found myself 
+expanding the scope. With each iteration, I looked for ways to improve functionality, performance, and usability.
+I learn best through hands-on, practical application, and building this tool allowed me to explore concepts that are essential in many IT 
+and cybersecurity roles — including data engineering, rate-limit handling, file system automation, and scalable data analysis. This project 
+became both a learning experience and a showcase of the technical skills I continue to develop.
+
 ---
 
 ## Features 
