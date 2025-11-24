@@ -6,7 +6,7 @@ automation, and large-scale data analysis with Pandas.
 
 ---
 
-## Features
+## Features 
 
 ### **NYTArchiveClient**
 - Downloads full monthly NYT article archives from 1851–present  
