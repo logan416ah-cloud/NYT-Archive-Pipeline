@@ -1,6 +1,8 @@
 # NYTimes Archive Scraper (NYTickler)
 
 A Python-based toolset for downloading, caching, and analyzing historical New York Times article archives using the NYT Archive API.
+This project was built to practice and demonstrate working with REST APIs, handling rate limits, data engineering (ETL), file system
+automation, and large-scale data analysis with Pandas.
 
 ---
 
@@ -47,16 +49,48 @@ pip install requests pandas tqdm
 ```
 
 ---
+## Project Structure
 
+The NYTickler project automatically builds and manages a clean directory layout for storing downloaded NYT archives and saved search results.
+Below is the structure created when running the downloader and analysis tools:
+```
+NYT_Archive_Pipeline/
+│── NYTickler.py
+│── README.md
+│── requirements.txt
+│── .gitignore
+│
+│── NYT_Data/                # Created automatically when downloads begin
+│   ├── 1990-1999/
+│   │   ├── 1990_archive/
+│   │   │   ├── nyt_1990_1.csv
+│   │   │   ├── nyt_1990_2.csv
+│   │   │   └── ...
+│   │   ├── 1991_archive/
+│   │   └── ...
+│
+│── Custom_Search_Folder/    # Created automatically when saving filtered results
+│   ├── filtered_headline_war.csv
+│   └── filtered_1996-04-16.csv
+
+```
+What these folders contain:
+- NYT_Data/ — All downloaded NYT archive CSVs
+- Decade folders (e.g., 1900-1909) — High-level organization by decade
+- Year folders (e.g., 1905_archive) — Each month saved as one CSV
+- Custom_Search_Folder/ — Saved outputs from your filter_by_*() functions
+
+This structure ensures the dataset stays organized, scalable, and easy to work with for long-term analysis.
 ## API Key Setup
 
 The script requires an NYT API Key from:  
 https://developer.nytimes.com/
 
-Insert your key:
+Insert your key: 
+Be cognizant of hard coding your API Keys.
 
 ```python
-api_key = "YOUR_NYT_API_KEY"
+api_key = "YOUR_NYT_API_KEY" 
 ```
 
 ---
@@ -66,7 +100,7 @@ api_key = "YOUR_NYT_API_KEY"
 ### Download NYT archives:
 
 NYT limits requests to 5 per minute and 500 per day.
-Larger date ranges will take longer to download due to rate-limiting.
+Larger date ranges may take significant time to download because each request must wait 12 seconds to respect NYT rate limits.
 
 Use this first to download files. 
 
@@ -90,4 +124,16 @@ t = Tickler()
 df = t.filter_by_headline("election", "war")
 print(df)
 ```
+### Saving searches:
+
+You can also save custom search queries by adding save=True.
+
+```python
+from NYTickler import Tickler
+
+t = Tickler()
+print(t.filter_by_date(1996, 4, 16, save=True))
+```
+This will save your search in a "Custom_Search_Folder" as "filtered_1996-04-16.csv"
+
 
